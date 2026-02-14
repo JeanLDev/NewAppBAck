@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const express = require("express");
 const webPush = require("web-push");
 const { createClient } = require("@supabase/supabase-js");
@@ -9,7 +7,6 @@ app.use(express.json());
 
 /* =========================
    VALIDAÇÃO ENV
-========================= */
 
 if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
   throw new Error("Chaves VAPID não configuradas");
@@ -21,7 +18,7 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
 
 /* =========================
    CONFIG PUSH
-========================= */
+
 
 webPush.setVapidDetails(
   "mailto:jeanldev@hotmail.com",
@@ -31,7 +28,7 @@ webPush.setVapidDetails(
 
 /* =========================
    SUPABASE
-========================= */
+
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -57,10 +54,18 @@ app.get("/blog", (req, res) => {
 app.get("/contato", (req, res) => {
   res.send("Pagina de contato");
 });
+app.get("/debug-env", (req, res) => {
+  res.json({
+    VAPID_PUBLIC_KEY: process.env.VAPID_PUBLIC_KEY,
+    VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY,
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY
+  });
+});
 
 /* =========================
    ENVIAR PUSH
-========================= */
+
 
 app.post("/send-to-user", async (req, res) => {
   const { user_id, title, body } = req.body;
